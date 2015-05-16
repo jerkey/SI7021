@@ -89,7 +89,7 @@ int SI7021::_readReg(uint8_t * reg, int reglen) {
     while(Wire.available() < reglen) {
     }
     for(int i = 0; i < reglen; i++) { 
-        reg[i] = Wire.read(); 
+        reg[i] = Wire.receive();
     }
     return 1;
 }
