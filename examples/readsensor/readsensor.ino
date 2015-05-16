@@ -3,12 +3,10 @@
 
 
 SI7021 sensor;
-int led1 = 3;
-int led2 = 4;
 
 void setup() {
-    pinMode(led1, OUTPUT);
-    pinMode(led2, OUTPUT);
+  Serial.begin(115200);
+  Serial.println("reading an SI7020 temperature / humidiy sensor");
     sensor.begin();
 }
 
@@ -17,64 +15,34 @@ void loop() {
 
     // temperature is an integer in hundredths
     int temperature = sensor.getCelsiusHundredths();
-    temperature = temperature / 100;
-    for (int i = 0; i < temperature; i++) {
-        pulse(led1); 
-    }
-    
-    delay(5000);
+    Serial.print((float)temperature / 100.0);
+    Serial.print("C, ");
     
     // humidity is an integer representing percent
     int humidity = sensor.getHumidityPercent();
-    for (int i = 0; i < humidity; i++) {
-        pulse(led2); 
-    }
-    
-    delay(5000);
+    Serial.print(humidity);
+    Serial.print("%RH, ");
     
     // this driver should work for SI7020 and SI7021, this returns 20 or 21
     int deviceid = sensor.getDeviceId();
-    for (int i = 0; i < deviceid; i++) {
-        pulse(led1); 
-    }
-    delay(5000);
+    Serial.print(deviceid);
+    Serial.print(" devID, ");
 
     // enable internal heater for testing
     sensor.setHeater(true);
-    delay(20000);
+    delay(10000);
     sensor.setHeater(false);
     
     // see if heater changed temperature
     temperature = sensor.getCelsiusHundredths();
-    temperature = temperature / 100;
-    for (int i = 0; i < temperature; i++) {
-        pulse(led2); 
-    }
-    
-    //cool down
-    delay(20000);
+    Serial.print((float)temperature / 100.0);
+    Serial.print("C after heater, ");
 
     // get humidity and temperature in one shot, saves power because sensor takes temperature when doing humidity anyway
     si7021_env data = sensor.getHumidityAndTemperature();
-    for (int i = 0; i < data.celsiusHundredths/100; i++) {
-        pulse(led1); 
-    }
-    for (int i = 0; i < data.humidityBasisPoints; i++) {
-        pulse(led2); 
-    }
-    delay(5000);
+    Serial.print((float)data.celsiusHundredths / 100.0);
+    Serial.print("C2, ");
+    Serial.print((float)data.humidityBasisPoints / 100.0);
+    Serial.println("%RH2, ");
+    delay(1000);
 }
-
-void pulse(int pin) {
-   // software pwm, flash light for ~1 second with short duty cycle
-   for (int i = 0; i < 20; i++) {
-       digitalWrite(pin, HIGH);
-       delay(1);
-       digitalWrite(pin,LOW);
-       delay(9);
-   }
-   digitalWrite(pin,LOW);
-   delay(300);
-}
-
-
