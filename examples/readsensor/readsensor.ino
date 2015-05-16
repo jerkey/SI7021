@@ -1,6 +1,8 @@
 #include <Wire.h>
 #include <SI7021.h>
 
+// for use with MPIDE / UNO32 / Pic32mx320f128h as seen here:
+// http://www.digilentinc.com/Products/Detail.cfm?Prod=CHIPKIT-UNO32
 
 SI7021 sensor;
 
