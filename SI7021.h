@@ -24,13 +24,13 @@ class SI7021
     unsigned int getHumidityPercent();
     unsigned int getHumidityBasisPoints();
     struct si7021_env getHumidityAndTemperature();
-    int getSerialBytes(byte * buf);
+    int getSerialBytes(uint8_t * buf);
     int getDeviceId();
     void setHeater(bool on);
   private:
-    void _command(byte * cmd, byte * buf );
-    void _writeReg(byte * reg, int reglen);
-    int _readReg(byte * reg, int reglen);
+    void _command(uint8_t * cmd, uint8_t * buf );
+    void _writeReg(uint8_t * reg, int reglen);
+    int _readReg(uint8_t * reg, int reglen);
     int _getCelsiusPostHumidity();
 };
 

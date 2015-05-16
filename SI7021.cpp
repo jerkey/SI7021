@@ -9,14 +9,14 @@ This program is licensed under the GNU GPL v2
 #define I2C_ADDR 0x40
 
 // I2C commands
-byte RH_READ[]           = { 0xE5 };
-byte TEMP_READ[]         = { 0xE3 };
-byte POST_RH_TEMP_READ[] = { 0xE0 };
-byte RESET[]             = { 0xFE };
-byte USER1_READ[]        = { 0xE7 };
-byte USER1_WRITE[]       = { 0xE6 };
-byte SERIAL1_READ[]      = { 0xFA, 0x0F };
-byte SERIAL2_READ[]      = { 0xFC, 0xC9 };
+uint8_t RH_READ[]           = { 0xE5 };
+uint8_t TEMP_READ[]         = { 0xE3 };
+uint8_t POST_RH_TEMP_READ[] = { 0xE0 };
+uint8_t RESET[]             = { 0xFE };
+uint8_t USER1_READ[]        = { 0xE7 };
+uint8_t USER1_WRITE[]       = { 0xE6 };
+uint8_t SERIAL1_READ[]      = { 0xFA, 0x0F };
+uint8_t SERIAL2_READ[]      = { 0xFC, 0xC9 };
 
 bool _si_exists = false;
 
@@ -42,14 +42,14 @@ int SI7021::getFahrenheitHundredths() {
 }
 
 int SI7021::getCelsiusHundredths() {
-    byte tempbytes[2];
+    uint8_t tempbytes[2];
     _command(TEMP_READ, tempbytes);
     long tempraw = (long)tempbytes[0] << 8 | tempbytes[1];
     return ((17572 * tempraw) >> 16) - 4685;
 }
 
 int SI7021::_getCelsiusPostHumidity() {
-    byte tempbytes[2];
+    uint8_t tempbytes[2];
     _command(POST_RH_TEMP_READ, tempbytes);
     long tempraw = (long)tempbytes[0] << 8 | tempbytes[1];
     return ((17572 * tempraw) >> 16) - 4685;
@@ -57,25 +57,25 @@ int SI7021::_getCelsiusPostHumidity() {
 
 
 unsigned int SI7021::getHumidityPercent() {
-    byte humbytes[2];
+    uint8_t humbytes[2];
     _command(RH_READ, humbytes);
     long humraw = (long)humbytes[0] << 8 | humbytes[1];
     return ((125 * humraw) >> 16) - 6;
 }
 
 unsigned int SI7021::getHumidityBasisPoints() {
-    byte humbytes[2];
+    uint8_t humbytes[2];
     _command(RH_READ, humbytes);
     long humraw = (long)humbytes[0] << 8 | humbytes[1];
     return ((12500 * humraw) >> 16) - 600;
 }
 
-void SI7021::_command(byte * cmd, byte * buf ) {
+void SI7021::_command(uint8_t * cmd, uint8_t * buf ) {
     _writeReg(cmd, sizeof cmd);
     _readReg(buf, sizeof buf);
 }
 
-void SI7021::_writeReg(byte * reg, int reglen) {
+void SI7021::_writeReg(uint8_t * reg, int reglen) {
     Wire.beginTransmission(I2C_ADDR);
     for(int i = 0; i < reglen; i++) {
         reg += i;
@@ -84,7 +84,7 @@ void SI7021::_writeReg(byte * reg, int reglen) {
     Wire.endTransmission();
 }
 
-int SI7021::_readReg(byte * reg, int reglen) {
+int SI7021::_readReg(uint8_t * reg, int reglen) {
     Wire.requestFrom(I2C_ADDR, reglen);
     while(Wire.available() < reglen) {
     }
@@ -95,7 +95,7 @@ int SI7021::_readReg(byte * reg, int reglen) {
 }
 
 //note this has crc bytes embedded, per datasheet, so provide 12 byte buf
-int SI7021::getSerialBytes(byte * buf) {
+int SI7021::getSerialBytes(uint8_t * buf) {
     _writeReg(SERIAL1_READ, sizeof SERIAL1_READ);
     _readReg(buf, 6);
  
@@ -107,20 +107,20 @@ int SI7021::getSerialBytes(byte * buf) {
 }
 
 int SI7021::getDeviceId() {
-    byte serial[12];
+    uint8_t serial[12];
     getSerialBytes(serial);
     int id = serial[6];
     return id;
 }
 
 void SI7021::setHeater(bool on) {
-    byte userbyte;
+    uint8_t userbyte;
     if (on) {
         userbyte = 0x3E;
     } else {
         userbyte = 0x3A;
     }
-    byte userwrite[] = {USER1_WRITE[0], userbyte};
+    uint8_t userwrite[] = {USER1_WRITE[0], userbyte};
     _writeReg(userwrite, sizeof userwrite);
 }
 
